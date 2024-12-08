@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../common/welcome_screen.dart';
+import 'package:mp3_clone/screens/admin/widgets/add_music_screen.dart';
+import '../common/welcome_screen.dart'; // Đừng quên import màn hình AddMusicScreen
 
 class AdminScreen extends StatelessWidget {
   static const routeName = '/admin';
@@ -9,7 +9,7 @@ class AdminScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget _card(String title, String assetIcon) {
+    Widget _card(String title, String assetIcon, VoidCallback onPressed) {
       final side = MediaQuery.of(context).size.width / 2.5;
 
       return SizedBox(
@@ -33,11 +33,15 @@ class AdminScreen extends StatelessWidget {
                   child: Container(
                     alignment: Alignment.center,
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w600),
+                    child: TextButton(
+                      onPressed:
+                          onPressed, // Khi nhấn vào card, sẽ gọi onPressed
+                      child: Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w600),
+                      ),
                     ),
                   )),
             ],
@@ -65,11 +69,25 @@ class AdminScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              // Card để quản lý bài nhạc
               _card('Quản lý danh sách bài nhạc',
-                  'assets/icons/musical_notes_96.png'),
+                  'assets/icons/musical_notes_96.png', () {
+                // Khi nhấn vào card "Quản lý danh sách bài nhạc", mở màn hình quản lý bài nhạc
+              }),
+
+              // Card để thêm bài nhạc
+              _card('Thêm Bài Nhạc', 'assets/icons/add_music_96.png', () {
+                // Khi nhấn vào card "Thêm Bài Nhạc", chuyển tới màn hình thêm bài nhạc
+                Navigator.of(context).pushNamed(AddMusicScreen.routeName);
+              }),
+
               _card('Quản lý danh sách playlist',
-                  'assets/icons/playlist_2_96.png'),
-              _card('Gửi thông báo', 'assets/icons/email_send_96.png'),
+                  'assets/icons/playlist_2_96.png', () {
+                // Khi nhấn vào card "Quản lý danh sách playlist", mở màn hình quản lý playlist
+              }),
+              _card('Gửi thông báo', 'assets/icons/email_send_96.png', () {
+                // Khi nhấn vào card "Gửi thông báo", mở màn hình gửi thông báo
+              }),
             ],
           ),
         ),

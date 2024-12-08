@@ -4,6 +4,7 @@ import 'package:mp3_clone/providers/playing_log_provider.dart';
 import 'package:mp3_clone/providers/playlist_provider.dart';
 import 'package:mp3_clone/providers/ranked_music_provider.dart';
 import 'package:mp3_clone/screens/admin/admin_screen.dart';
+import 'package:mp3_clone/screens/admin/widgets/add_music_screen.dart';
 
 import 'screens/explorer/all_playlists_screen.dart';
 import 'providers/recent_search_provider.dart';
@@ -78,6 +79,8 @@ class MyApp extends StatelessWidget {
                 AllPlaylistsScreen.routeName: (ctx) =>
                     const AllPlaylistsScreen(),
                 AdminScreen.routeName: (ctx) => const AdminScreen(),
+                AddMusicScreen.routeName: (ctx) =>
+                    const AddMusicScreen(), // Thêm màn hình AddMusicScreen
               });
         });
   }

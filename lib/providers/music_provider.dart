@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../models/music.dart';
+import 'package:mp3_clone/models/music.dart';
 
 class MusicProvider {
   static final MusicProvider instance = MusicProvider._internal();
@@ -33,6 +32,7 @@ class MusicProvider {
     }
   }
 
+  // Phương thức tìm kiếm bài nhạc
   List<Music> search(String keyword) {
     List<Music> result = [];
     keyword.replaceAll(' ', '');
@@ -47,8 +47,28 @@ class MusicProvider {
     return result;
   }
 
+  // Phương thức sắp xếp bài nhạc (Chưa thực hiện)
   List<Music> getSorted() {
     // TODO: Sắp xếp giảm dần dùng playing_log
     return list;
+  }
+
+  // Phương thức tạo bài nhạc và lưu vào Firebase
+  Future<void> addMusic(Music music) async {
+    final firestore = FirebaseFirestore.instance;
+    try {
+      // Thêm bài nhạc vào Firestore
+      final docRef = await firestore.collection('musics').add(music.toMap());
+
+      // Cập nhật lại ID bài nhạc sau khi lưu vào Firebase
+      final newMusic = music.copyWith(id: docRef.id);
+
+      // Thêm bài nhạc vào danh sách trong provider
+      _list.add(newMusic);
+
+      // Nếu có thể, bạn có thể gọi setState để cập nhật UI hoặc notify listeners nếu đang sử dụng `ChangeNotifier`
+    } catch (error) {
+      print('<<Exception-MusicProvider-addMusic>> ' + error.toString());
+    }
   }
 }

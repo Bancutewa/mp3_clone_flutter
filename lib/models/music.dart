@@ -20,13 +20,13 @@ class Music {
     this.lyrics,
   }) : isDevice = false;
 
-  Music.device(
-      {required this.id,
-      required this.title,
-      required this.artists,
-      required this.duration,
-      required this.audioUrl})
-      : thumbnailUrl = '',
+  Music.device({
+    required this.id,
+    required this.title,
+    required this.artists,
+    required this.duration,
+    required this.audioUrl,
+  })  : thumbnailUrl = '',
         imageUrl = '',
         isDevice = true;
 
@@ -61,5 +61,28 @@ class Music {
       map['lyrics'] = lyrics!;
     }
     return map;
+  }
+
+  // Phương thức copyWith để tạo một bản sao với ID mới
+  Music copyWith({
+    String? id,
+    String? title,
+    String? artists,
+    String? imageUrl,
+    String? thumbnailUrl,
+    String? audioUrl,
+    int? duration,
+    String? lyrics,
+  }) {
+    return Music(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      artists: artists ?? this.artists,
+      imageUrl: imageUrl ?? this.imageUrl,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      audioUrl: audioUrl ?? this.audioUrl,
+      duration: duration ?? this.duration,
+      lyrics: lyrics ?? this.lyrics,
+    );
   }
 }
