@@ -1,21 +1,40 @@
 {
   "project_info": {
-    "project_number": "229400889372",
-    "project_id": "zing-mp3-clone-d51e7",
-    "storage_bucket": "zing-mp3-clone-d51e7.firebasestorage.app"
+    "project_number": "530993453850",
+    "project_id": "fir-img-4719c",
+    "storage_bucket": "fir-img-4719c.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:229400889372:android:decefa0222a8ac8bebb7d9",
+        "mobilesdk_app_id": "1:530993453850:android:47f06f1b0c6af9ed6b2aa3",
         "android_client_info": {
-          "package_name": "com.zingmp3.app"
+          "package_name": "com.mp3clone.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDkmR5XDS4QokEMcYrN4Y1G8ehzFU7Ok_Q"
+          "current_key": "AIzaSyAgUBxnnw98lZTKDpf0wq8t-C0bdaYvhjA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:530993453850:android:539c6fd034ee4ec56b2aa3",
+        "android_client_info": {
+          "package_name": "com.zingclone.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgUBxnnw98lZTKDpf0wq8t-C0bdaYvhjA"
         }
       ],
       "services": {

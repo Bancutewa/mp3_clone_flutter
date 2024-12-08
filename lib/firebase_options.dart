@@ -41,21 +41,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBFnpsETe3FNwJJ-5rqecU33HCdS4VKwI4',
-    appId: '1:229400889372:web:549c137cebc73015ebb7d9',
-    messagingSenderId: '229400889372',
-    projectId: 'zing-mp3-clone-d51e7',
-    authDomain: 'zing-mp3-clone-d51e7.firebaseapp.com',
-    storageBucket: 'zing-mp3-clone-d51e7.firebasestorage.app',
-    measurementId: 'G-DDQCWVJCJ1',
+    apiKey: 'AIzaSyDFVyG1E6g45EgygQ4l7rF9RG2sSNohSZk',
+    appId: '1:530993453850:web:868749a21dd0d43f6b2aa3',
+    messagingSenderId: '530993453850',
+    projectId: 'fir-img-4719c',
+    authDomain: 'fir-img-4719c.firebaseapp.com',
+    storageBucket: 'fir-img-4719c.appspot.com',
+    measurementId: 'G-N62G6J3R8G',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDkmR5XDS4QokEMcYrN4Y1G8ehzFU7Ok_Q',
-    appId: '1:229400889372:android:decefa0222a8ac8bebb7d9',
-    messagingSenderId: '229400889372',
-    projectId: 'zing-mp3-clone-d51e7',
-    storageBucket: 'zing-mp3-clone-d51e7.firebasestorage.app',
+    apiKey: 'AIzaSyAgUBxnnw98lZTKDpf0wq8t-C0bdaYvhjA',
+    appId: '1:530993453850:android:539c6fd034ee4ec56b2aa3',
+    messagingSenderId: '530993453850',
+    projectId: 'fir-img-4719c',
+    storageBucket: 'fir-img-4719c.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -77,12 +77,13 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBFnpsETe3FNwJJ-5rqecU33HCdS4VKwI4',
-    appId: '1:229400889372:web:aff5795829cfca90ebb7d9',
-    messagingSenderId: '229400889372',
-    projectId: 'zing-mp3-clone-d51e7',
-    authDomain: 'zing-mp3-clone-d51e7.firebaseapp.com',
-    storageBucket: 'zing-mp3-clone-d51e7.firebasestorage.app',
-    measurementId: 'G-9Y7SZ262QD',
+    apiKey: 'AIzaSyCz_qc5pPZV9nkZSy6ksmvGRSnITZ7rbY4',
+    appId: '1:530993453850:web:cb5fc0d819db9fbf6b2aa3',
+    messagingSenderId: '530993453850',
+    projectId: 'fir-img-4719c',
+    authDomain: 'fir-img-4719c.firebaseapp.com',
+    storageBucket: 'fir-img-4719c.appspot.com',
+    measurementId: 'G-KN9MJQBC71',
   );
+
 }
