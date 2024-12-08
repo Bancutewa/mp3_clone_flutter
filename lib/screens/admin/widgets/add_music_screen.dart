@@ -1,12 +1,9 @@
-import 'dart:io';
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mp3_clone/models/music.dart';
 import 'package:mp3_clone/providers/music_provider.dart';
-import 'package:path/path.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:html' as html;
 
 class AddMusicScreen extends StatefulWidget {
   static const routeName = '/add-music';
@@ -21,61 +18,50 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
   final _titleController = TextEditingController();
   final _artistsController = TextEditingController();
   final _durationController = TextEditingController();
-  File? _audioFile;
-  File? _imageFile;
+
+  html.File? _audioFile;
+  html.File? _imageFile;
 
   bool _isLoading = false;
 
-  // Chọn file âm thanh (Web)
   Future<void> _pickAudioFile() async {
     final html.FileUploadInputElement input = html.FileUploadInputElement()
-      ..accept = 'audio/*'; // Chỉ chấp nhận file âm thanh
+      ..accept = 'audio/*';
     input.click();
 
-    input.onChange.listen((e) async {
+    input.onChange.listen((e) {
       final files = input.files;
-      if (files!.isEmpty) return;
-      final file = files[0];
-      final reader = html.FileReader();
-      reader.readAsArrayBuffer(file); // Đọc file âm thanh dưới dạng ArrayBuffer
-      reader.onLoadEnd.listen((e) {
+      if (files != null && files.isNotEmpty) {
         setState(() {
-          _audioFile = File(file.name); // Lưu tên file
+          _audioFile = files[0];
         });
-      });
+      }
     });
   }
 
-  // Chọn file hình ảnh (Web)
   Future<void> _pickImageFile() async {
     final html.FileUploadInputElement input = html.FileUploadInputElement()
-      ..accept = 'image/*'; // Chỉ chấp nhận file ảnh
+      ..accept = 'image/*';
     input.click();
 
-    input.onChange.listen((e) async {
+    input.onChange.listen((e) {
       final files = input.files;
-      if (files!.isEmpty) return;
-      final file = files[0];
-      final reader = html.FileReader();
-      reader.readAsDataUrl(file); // Đọc file hình ảnh dưới dạng DataURL
-      reader.onLoadEnd.listen((e) {
+      if (files != null && files.isNotEmpty) {
         setState(() {
-          _imageFile = File(file.name); // Lưu tên file
+          _imageFile = files[0];
         });
-      });
+      }
     });
   }
 
-  // Tải lên nhạc và hình ảnh lên Firebase
   Future<void> _uploadMusic() async {
+    // Kiểm tra các trường nhập
     if (_titleController.text.isEmpty ||
         _artistsController.text.isEmpty ||
         _audioFile == null ||
         _imageFile == null ||
         _durationController.text.isEmpty) {
-      ScaffoldMessenger.of(context as BuildContext).showSnackBar(SnackBar(
-        content: Text('Vui lòng điền đầy đủ thông tin!'),
-      ));
+      _showSnackBar('Vui lòng điền đầy đủ thông tin!');
       return;
     }
 
@@ -84,50 +70,52 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
     });
 
     try {
-      // Tải lên file âm thanh lên Firebase Storage
-      final audioFileName = basename(_audioFile!.path);
+      // Tải lên file âm thanh
+      final audioFileName = _audioFile!.name;
       final audioUploadTask = FirebaseStorage.instance
           .ref('audioFiles/$audioFileName')
-          .putFile(_audioFile!);
+          .putBlob(_audioFile!);
       final audioDownloadUrl =
           await (await audioUploadTask).ref.getDownloadURL();
 
-      // Tải lên hình ảnh lên Firebase Storage
-      final imageFileName = basename(_imageFile!.path);
+      // Tải lên hình ảnh
+      final imageFileName = _imageFile!.name;
       final imageUploadTask = FirebaseStorage.instance
           .ref('imageFiles/$imageFileName')
-          .putFile(_imageFile!);
+          .putBlob(_imageFile!);
       final imageDownloadUrl =
           await (await imageUploadTask).ref.getDownloadURL();
 
-      // Lưu dữ liệu vào Firestore
+      // Tạo đối tượng nhạc mới
       final newMusic = Music(
-        id: '', // ID có thể tạo sau khi lưu vào Firestore
+        id: '',
         title: _titleController.text,
         artists: _artistsController.text,
-        imageUrl: imageDownloadUrl, // Lưu URL hình ảnh
-        thumbnailUrl: imageDownloadUrl, // Lưu URL hình ảnh cho thumbnail
-        audioUrl: audioDownloadUrl, // Lưu URL âm thanh
+        imageUrl: imageDownloadUrl,
+        thumbnailUrl: imageDownloadUrl,
+        audioUrl: audioDownloadUrl,
         duration: int.parse(_durationController.text),
       );
 
-      // Gọi phương thức addMusic của provider
+      // Thêm nhạc
       await MusicProvider.instance.addMusic(newMusic);
 
-      ScaffoldMessenger.of(context as BuildContext).showSnackBar(SnackBar(
-        content: Text('Thêm bài nhạc thành công!'),
-      ));
-
-      Navigator.of(context as BuildContext).pop();
+      _showSnackBar('Thêm bài nhạc thành công!');
+      Navigator.of(context).pop();
     } catch (error) {
-      ScaffoldMessenger.of(context as BuildContext).showSnackBar(SnackBar(
-        content: Text('Có lỗi xảy ra, vui lòng thử lại.'),
-      ));
+      _showSnackBar('Có lỗi xảy ra, vui lòng thử lại.');
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
+  }
+
+  // Phương thức riêng để hiển thị SnackBar
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
@@ -137,9 +125,7 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
         title: const Text('Thêm Bài Nhạc'),
         actions: [
           IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            onPressed: () => Navigator.of(context).pop(),
             icon: const Icon(Icons.cancel),
           ),
         ],
@@ -178,10 +164,10 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
               ),
               _audioFile == null
                   ? const SizedBox.shrink()
-                  : Text('File Âm Thanh: ${_audioFile!.path}'),
+                  : Text('File Âm Thanh: ${_audioFile!.name}'),
               _imageFile == null
                   ? const SizedBox.shrink()
-                  : Text('File Hình Ảnh: ${_imageFile!.path}'),
+                  : Text('File Hình Ảnh: ${_imageFile!.name}'),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _isLoading ? null : _uploadMusic,
