@@ -6,6 +6,7 @@ import 'package:mp3_clone/models/music.dart';
 import 'package:mp3_clone/providers/music_provider.dart';
 import 'package:path/path.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:html' as html;
 
 class AddMusicScreen extends StatefulWidget {
   static const routeName = '/add-music';
@@ -19,37 +20,53 @@ class AddMusicScreen extends StatefulWidget {
 class _AddMusicScreenState extends State<AddMusicScreen> {
   final _titleController = TextEditingController();
   final _artistsController = TextEditingController();
-  final _audioUrlController = TextEditingController();
-  final _imageUrlController = TextEditingController();
-  final _thumbnailUrlController = TextEditingController();
   final _durationController = TextEditingController();
   File? _audioFile;
   File? _imageFile;
 
   bool _isLoading = false;
 
-  // Chọn file âm thanh
+  // Chọn file âm thanh (Web)
   Future<void> _pickAudioFile() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _audioFile = File(pickedFile.path);
+    final html.FileUploadInputElement input = html.FileUploadInputElement()
+      ..accept = 'audio/*'; // Chỉ chấp nhận file âm thanh
+    input.click();
+
+    input.onChange.listen((e) async {
+      final files = input.files;
+      if (files!.isEmpty) return;
+      final file = files[0];
+      final reader = html.FileReader();
+      reader.readAsArrayBuffer(file); // Đọc file âm thanh dưới dạng ArrayBuffer
+      reader.onLoadEnd.listen((e) {
+        setState(() {
+          _audioFile = File(file.name); // Lưu tên file
+        });
       });
-    }
+    });
   }
 
-  // Chọn file hình ảnh
+  // Chọn file hình ảnh (Web)
   Future<void> _pickImageFile() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
+    final html.FileUploadInputElement input = html.FileUploadInputElement()
+      ..accept = 'image/*'; // Chỉ chấp nhận file ảnh
+    input.click();
+
+    input.onChange.listen((e) async {
+      final files = input.files;
+      if (files!.isEmpty) return;
+      final file = files[0];
+      final reader = html.FileReader();
+      reader.readAsDataUrl(file); // Đọc file hình ảnh dưới dạng DataURL
+      reader.onLoadEnd.listen((e) {
+        setState(() {
+          _imageFile = File(file.name); // Lưu tên file
+        });
       });
-    }
+    });
   }
 
+  // Tải lên nhạc và hình ảnh lên Firebase
   Future<void> _uploadMusic() async {
     if (_titleController.text.isEmpty ||
         _artistsController.text.isEmpty ||
@@ -85,12 +102,12 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
 
       // Lưu dữ liệu vào Firestore
       final newMusic = Music(
-        id: '',
+        id: '', // ID có thể tạo sau khi lưu vào Firestore
         title: _titleController.text,
         artists: _artistsController.text,
-        imageUrl: imageDownloadUrl,
-        thumbnailUrl: imageDownloadUrl,
-        audioUrl: audioDownloadUrl,
+        imageUrl: imageDownloadUrl, // Lưu URL hình ảnh
+        thumbnailUrl: imageDownloadUrl, // Lưu URL hình ảnh cho thumbnail
+        audioUrl: audioDownloadUrl, // Lưu URL âm thanh
         duration: int.parse(_durationController.text),
       );
 
