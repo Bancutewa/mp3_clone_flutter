@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "229400889372",
+    "project_id": "zing-mp3-clone-d51e7",
+    "storage_bucket": "zing-mp3-clone-d51e7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:229400889372:android:decefa0222a8ac8bebb7d9",
+        "android_client_info": {
+          "package_name": "com.zingmp3.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkmR5XDS4QokEMcYrN4Y1G8ehzFU7Ok_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
