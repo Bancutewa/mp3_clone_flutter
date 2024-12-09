@@ -1,5 +1,6 @@
+import 'package:mp3_clone/providers/playing_log_provider.dart';
+
 import 'music_provider.dart';
-import 'playing_log_provider.dart';
 
 class RankedMusic {
   RankedMusic(

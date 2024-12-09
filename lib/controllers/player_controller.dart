@@ -116,9 +116,6 @@ class PlayerController {
   void _play(Music music) {
     _audioPlayer.play(music.audioUrl);
     state = PlayerState.PLAYING;
-    if (!music.isDevice) {
-      PlayingLogProvider.instance.addNewLog(music.id);
-    }
 
     if (RadioProvider.instance.isPlaying) {
       RadioProvider.instance.stop();

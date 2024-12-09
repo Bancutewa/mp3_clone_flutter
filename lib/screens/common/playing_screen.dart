@@ -103,12 +103,6 @@ class _PlayingScreenState extends State<PlayingScreen> {
                                   : 'Hiện lời bài hát'),
                               value: 1,
                             ),
-                            const PopupMenuItem(
-                                child: Text('Thêm vào playlist'), value: 2),
-                            const PopupMenuItem(
-                              child: Text('Tải về máy'),
-                              value: 3,
-                            ),
                           ],
                           onSelected: (value) {
                             switch (value) {

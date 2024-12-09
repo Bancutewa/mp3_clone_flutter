@@ -79,8 +79,7 @@ class MyApp extends StatelessWidget {
                 AllPlaylistsScreen.routeName: (ctx) =>
                     const AllPlaylistsScreen(),
                 AdminScreen.routeName: (ctx) => const AdminScreen(),
-                AddMusicScreen.routeName: (ctx) =>
-                    const AddMusicScreen(), // Thêm màn hình AddMusicScreen
+                AddMusicScreen.routeName: (ctx) => const AddMusicScreen(),
               });
         });
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mp3_clone/screens/admin/admin_screen.dart';
 
 import '../../providers/music_provider.dart';
 import '../../providers/playing_log_provider.dart';
@@ -9,7 +10,6 @@ import '../../controllers/player_controller.dart';
 import '../../pages/chart_page.dart';
 import '../../pages/explorer_page.dart';
 import '../../pages/personal_page.dart';
-import '../../pages/radio_page.dart';
 import '../auth/login_screen.dart';
 import 'account_screen.dart';
 import 'search_screen.dart';
@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 PersonalPage(),
                 ExplorerPage(),
                 ChartPage(),
-                RadioPage(),
+                AdminScreen(),
               ],
             )
           : const Center(child: CircularProgressIndicator()),
@@ -133,7 +133,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       BottomNavigationBarItem(
                           icon: Icon(Icons.insights_rounded), label: 'Chart'),
                       BottomNavigationBarItem(
-                          icon: Icon(Icons.radio), label: 'Radio'),
+                          icon: Icon(Icons.admin_panel_settings),
+                          label: 'Admin'), // Thêm mục Admin
                     ],
                   ),
                 ],
