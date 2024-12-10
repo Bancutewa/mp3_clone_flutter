@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:mp3_clone/models/music.dart';
 
-class MusicProvider {
+class MusicProvider with ChangeNotifier {
   static final MusicProvider instance = MusicProvider._internal();
   MusicProvider._internal();
 
@@ -27,6 +28,7 @@ class MusicProvider {
               error.toString());
         }
       }
+      notifyListeners(); // Gọi notifyListeners() để cập nhật giao diện
     } catch (error) {
       print('<<Exception-AllMusics-fetchAndSetData>> ' + error.toString());
     }
@@ -65,10 +67,42 @@ class MusicProvider {
 
       // Thêm bài nhạc vào danh sách trong provider
       _list.add(newMusic);
-
-      // Nếu có thể, bạn có thể gọi setState để cập nhật UI hoặc notify listeners nếu đang sử dụng `ChangeNotifier`
+      notifyListeners(); // Gọi notifyListeners() để cập nhật giao diện
     } catch (error) {
       print('<<Exception-MusicProvider-addMusic>> ' + error.toString());
+    }
+  }
+
+  // Phương thức cập nhật bài nhạc trong Firebase
+  Future<void> updateMusic(Music music) async {
+    final firestore = FirebaseFirestore.instance;
+    try {
+      // Cập nhật bài nhạc trong Firestore
+      await firestore.collection('musics').doc(music.id).update(music.toMap());
+
+      // Cập nhật bài nhạc trong danh sách provider
+      int index = _list.indexWhere((m) => m.id == music.id);
+      if (index != -1) {
+        _list[index] = music; // Cập nhật bài nhạc trong danh sách
+        notifyListeners(); // Gọi notifyListeners() để cập nhật giao diện
+      }
+    } catch (error) {
+      print('<<Exception-MusicProvider-updateMusic>> ' + error.toString());
+    }
+  }
+
+  // Phương thức xóa bài nhạc trong Firebase
+  Future<void> deleteMusic(String id) async {
+    final firestore = FirebaseFirestore.instance;
+    try {
+      // Xóa bài nhạc khỏi Firestore
+      await firestore.collection('musics').doc(id).delete();
+
+      // Xóa bài nhạc khỏi danh sách provider
+      _list.removeWhere((music) => music.id == id);
+      notifyListeners(); // Gọi notifyListeners() để cập nhật giao diện
+    } catch (error) {
+      print('<<Exception-MusicProvider-deleteMusic>> ' + error.toString());
     }
   }
 }
