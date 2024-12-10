@@ -18,6 +18,7 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
   final _titleController = TextEditingController();
   final _artistsController = TextEditingController();
   final _durationController = TextEditingController();
+  final _lyricsController = TextEditingController();
 
   html.File? _audioFile;
   html.File? _imageFile;
@@ -60,6 +61,7 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
         _artistsController.text.isEmpty ||
         _audioFile == null ||
         _imageFile == null ||
+        _lyricsController.text.isEmpty ||
         _durationController.text.isEmpty) {
       _showSnackBar('Vui lòng điền đầy đủ thông tin!');
       return;
@@ -86,15 +88,16 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
       final imageDownloadUrl =
           await (await imageUploadTask).ref.getDownloadURL();
 
-      // Tạo đối tượng nhạc mới
+      // Tạo đối tượng nhạc mới với id tự động tạo
       final newMusic = Music(
-        id: '',
+        id: Music.generateId(),
         title: _titleController.text,
         artists: _artistsController.text,
         imageUrl: imageDownloadUrl,
         thumbnailUrl: imageDownloadUrl,
         audioUrl: audioDownloadUrl,
         duration: int.parse(_durationController.text),
+        lyrics: _lyricsController.text,
       );
 
       // Thêm nhạc
@@ -142,6 +145,15 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
               TextField(
                 controller: _artistsController,
                 decoration: const InputDecoration(labelText: 'Nghệ Sĩ'),
+              ),
+              TextFormField(
+                controller: _lyricsController,
+                maxLines: null, // Cho phép nhập nhiều dòng
+                keyboardType: TextInputType.multiline, // Bàn phím đa dòng
+                decoration: const InputDecoration(
+                  labelText: 'Lời bài hát',
+                  hintText: 'Nhập lời bài hát ở đây...',
+                ),
               ),
               TextField(
                 controller: _durationController,
