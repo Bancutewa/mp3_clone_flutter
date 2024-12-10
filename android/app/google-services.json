@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "530993453850",
+    "project_id": "fir-img-4719c",
+    "storage_bucket": "fir-img-4719c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:530993453850:android:47f06f1b0c6af9ed6b2aa3",
+        "android_client_info": {
+          "package_name": "com.mp3clone.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgUBxnnw98lZTKDpf0wq8t-C0bdaYvhjA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:530993453850:android:539c6fd034ee4ec56b2aa3",
+        "android_client_info": {
+          "package_name": "com.zingclone.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgUBxnnw98lZTKDpf0wq8t-C0bdaYvhjA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
