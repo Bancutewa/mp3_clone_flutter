@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mp3_clone/screens/admin/screens/music_management_screen.dart';
 import 'package:mp3_clone/screens/admin/widgets/add_music_screen.dart';
 import '../common/welcome_screen.dart'; // Đừng quên import màn hình AddMusicScreen
 
@@ -56,11 +57,11 @@ class AdminScreen extends StatelessWidget {
         title: const Text('Quản trị viên'),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    WelcomeScreen.routeName, (Route<dynamic> route) => false);
-              },
-              icon: const Icon(Icons.logout_rounded)),
+            onPressed: () {
+              Navigator.of(context).pushNamed(MusicManagementScreen.routeName);
+            },
+            icon: const Icon(Icons.music_note),
+          ),
         ],
       ),
       body: Center(
@@ -72,13 +73,8 @@ class AdminScreen extends StatelessWidget {
               // Card để quản lý bài nhạc
               _card('Quản lý danh sách bài nhạc',
                   'assets/icons/musical_notes_96.png', () {
-                // Khi nhấn vào card "Quản lý danh sách bài nhạc", mở màn hình quản lý bài nhạc
-              }),
-
-              // Card để thêm bài nhạc
-              _card('Thêm Bài Nhạc', 'assets/icons/add_music_96.png', () {
-                // Khi nhấn vào card "Thêm Bài Nhạc", chuyển tới màn hình thêm bài nhạc
-                Navigator.of(context).pushNamed(AddMusicScreen.routeName);
+                Navigator.of(context)
+                    .pushNamed(MusicManagementScreen.routeName);
               }),
 
               _card('Quản lý danh sách playlist',

@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:mp3_clone/providers/device_music_provider.dart';
 
 import '../../providers/music_provider.dart';
 import '../../models/playlist.dart';
@@ -65,12 +64,6 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         numberOfMusic = musics.length;
         backgroundAsset = 'assets/images/playlist/user_playlist_background.jpg';
         break;
-
-      case 'DeviceMusics':
-        musics = DeviceMusicProvider.instance.list;
-        title = 'Trên thiết bị';
-        numberOfMusic = musics.length;
-        backgroundAsset = 'assets/images/playlist/user_playlist_background.jpg';
     }
 
     super.didChangeDependencies();
@@ -143,7 +136,8 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                           playerController.setMusicList(musics, shuffle: true);
                         },
                         child: const Text('PHÁT NGẪU NHIÊN',
-                            style: TextStyle(fontSize: 15))),
+                            style:
+                                TextStyle(fontSize: 15, color: Colors.white))),
                   ),
                 ),
                 Expanded(

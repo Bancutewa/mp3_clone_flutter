@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 class Music {
   final String id;
   final String title;
@@ -7,7 +9,6 @@ class Music {
   final String audioUrl;
   final int duration;
   String? lyrics;
-  final bool isDevice;
 
   Music({
     required this.id,
@@ -18,17 +19,7 @@ class Music {
     required this.audioUrl,
     required this.duration,
     this.lyrics,
-  }) : isDevice = false;
-
-  Music.device({
-    required this.id,
-    required this.title,
-    required this.artists,
-    required this.duration,
-    required this.audioUrl,
-  })  : thumbnailUrl = '',
-        imageUrl = '',
-        isDevice = true;
+  });
 
   factory Music.fromMap(Map<String, dynamic> map, String id) {
     String? lyrics = map['lyrics'];
@@ -46,6 +37,10 @@ class Music {
       duration: map['duration'],
       lyrics: lyrics,
     );
+  }
+  static String generateId() {
+    var uuid = const Uuid();
+    return uuid.v4();
   }
 
   Map<String, Object> toMap() {

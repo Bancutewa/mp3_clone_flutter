@@ -5,25 +5,36 @@ import 'package:mp3_clone/models/music.dart';
 import 'package:mp3_clone/providers/music_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AddMusicScreen extends StatefulWidget {
-  static const routeName = '/add-music';
+class EditMusicScreen extends StatefulWidget {
+  static const routeName = '/edit-music';
 
-  const AddMusicScreen({Key? key}) : super(key: key);
+  final Music music; // Dữ liệu bài nhạc cần chỉnh sửa
+
+  const EditMusicScreen({Key? key, required this.music}) : super(key: key);
 
   @override
-  _AddMusicScreenState createState() => _AddMusicScreenState();
+  _EditMusicScreenState createState() => _EditMusicScreenState();
 }
 
-class _AddMusicScreenState extends State<AddMusicScreen> {
+class _EditMusicScreenState extends State<EditMusicScreen> {
   final _titleController = TextEditingController();
   final _artistsController = TextEditingController();
   final _durationController = TextEditingController();
   final _lyricsController = TextEditingController();
 
+  bool _isLoading = false;
   html.File? _audioFile;
   html.File? _imageFile;
 
-  bool _isLoading = false;
+  @override
+  void initState() {
+    super.initState();
+    // Khởi tạo giá trị mặc định cho các trường
+    _titleController.text = widget.music.title;
+    _artistsController.text = widget.music.artists;
+    _durationController.text = widget.music.duration.toString();
+    _lyricsController.text = widget.music.lyrics!;
+  }
 
   Future<void> _pickAudioFile() async {
     final html.FileUploadInputElement input = html.FileUploadInputElement()
@@ -55,14 +66,11 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
     });
   }
 
-  Future<void> _uploadMusic() async {
-    // Kiểm tra các trường nhập
+  Future<void> _updateMusic() async {
     if (_titleController.text.isEmpty ||
         _artistsController.text.isEmpty ||
-        _audioFile == null ||
-        _imageFile == null ||
-        _lyricsController.text.isEmpty ||
-        _durationController.text.isEmpty) {
+        _durationController.text.isEmpty ||
+        _lyricsController.text.isEmpty) {
       _showSnackBar('Vui lòng điền đầy đủ thông tin!');
       return;
     }
@@ -72,38 +80,39 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
     });
 
     try {
-      // Tải lên file âm thanh
-      final audioFileName = _audioFile!.name;
-      final audioUploadTask = FirebaseStorage.instance
-          .ref('audioFiles/$audioFileName')
-          .putBlob(_audioFile!);
-      final audioDownloadUrl =
-          await (await audioUploadTask).ref.getDownloadURL();
+      String? audioDownloadUrl = widget.music.audioUrl;
+      String? imageDownloadUrl = widget.music.imageUrl;
 
-      // Tải lên hình ảnh
-      final imageFileName = _imageFile!.name;
-      final imageUploadTask = FirebaseStorage.instance
-          .ref('imageFiles/$imageFileName')
-          .putBlob(_imageFile!);
-      final imageDownloadUrl =
-          await (await imageUploadTask).ref.getDownloadURL();
+      if (_audioFile != null) {
+        // Tải lên file âm thanh mới nếu có
+        final audioFileName = _audioFile!.name;
+        final audioUploadTask = FirebaseStorage.instance
+            .ref('audioFiles/$audioFileName')
+            .putBlob(_audioFile!);
+        audioDownloadUrl = await (await audioUploadTask).ref.getDownloadURL();
+      }
 
-      // Tạo đối tượng nhạc mới với id tự động tạo
-      final newMusic = Music(
-        id: Music.generateId(),
+      if (_imageFile != null) {
+        // Tải lên hình ảnh mới nếu có
+        final imageFileName = _imageFile!.name;
+        final imageUploadTask = FirebaseStorage.instance
+            .ref('imageFiles/$imageFileName')
+            .putBlob(_imageFile!);
+        imageDownloadUrl = await (await imageUploadTask).ref.getDownloadURL();
+      }
+
+      final updatedMusic = widget.music.copyWith(
         title: _titleController.text,
         artists: _artistsController.text,
-        imageUrl: imageDownloadUrl,
-        thumbnailUrl: imageDownloadUrl,
-        audioUrl: audioDownloadUrl,
         duration: int.parse(_durationController.text),
         lyrics: _lyricsController.text,
+        imageUrl: imageDownloadUrl ?? widget.music.imageUrl,
+        audioUrl: audioDownloadUrl ?? widget.music.audioUrl,
       );
 
-      // Thêm nhạc
-      await MusicProvider.instance.addMusic(newMusic);
+      await MusicProvider.instance.updateMusic(updatedMusic);
 
-      _showSnackBar('Thêm bài nhạc thành công!');
+      _showSnackBar('Chỉnh sửa bài nhạc thành công!');
       Navigator.of(context).pop();
     } catch (error) {
       _showSnackBar('Có lỗi xảy ra, vui lòng thử lại.');
@@ -114,18 +123,17 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
     }
   }
 
-  // Phương thức riêng để hiển thị SnackBar
+  // Hiển thị SnackBar
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thêm Bài Nhạc'),
+        title: const Text('Chỉnh Sửa Bài Nhạc'),
         actions: [
           IconButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -148,8 +156,8 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
               ),
               TextFormField(
                 controller: _lyricsController,
-                maxLines: null, // Cho phép nhập nhiều dòng
-                keyboardType: TextInputType.multiline, // Bàn phím đa dòng
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
                 decoration: const InputDecoration(
                   labelText: 'Lời bài hát',
                   hintText: 'Nhập lời bài hát ở đây...',
@@ -182,10 +190,10 @@ class _AddMusicScreenState extends State<AddMusicScreen> {
                   : Text('File Hình Ảnh: ${_imageFile!.name}'),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _isLoading ? null : _uploadMusic,
+                onPressed: _isLoading ? null : _updateMusic,
                 child: _isLoading
                     ? const CircularProgressIndicator()
-                    : const Text('Lưu Bài Nhạc'),
+                    : const Text('Cập Nhật Bài Nhạc'),
               ),
             ],
           ),

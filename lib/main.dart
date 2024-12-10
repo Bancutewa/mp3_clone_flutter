@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:mp3_clone/models/music.dart';
 import 'package:mp3_clone/providers/music_provider.dart';
 import 'package:mp3_clone/providers/playing_log_provider.dart';
 import 'package:mp3_clone/providers/playlist_provider.dart';
 import 'package:mp3_clone/providers/ranked_music_provider.dart';
 import 'package:mp3_clone/screens/admin/admin_screen.dart';
+import 'package:mp3_clone/screens/admin/screens/music_management_screen.dart';
 import 'package:mp3_clone/screens/admin/widgets/add_music_screen.dart';
+import 'package:mp3_clone/screens/admin/widgets/edit_music_screen.dart';
+import 'package:provider/provider.dart';
 
 import 'screens/explorer/all_playlists_screen.dart';
 import 'providers/recent_search_provider.dart';
@@ -32,7 +36,17 @@ void main() async {
   await PlayingLogProvider.instance.fetchAndSetData();
   await RankedMusicProvider.instance.countAndSort();
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (_) =>
+                MusicProvider.instance), // Đảm bảo provider này có mặt
+        // Các provider khác nếu có
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -79,8 +93,13 @@ class MyApp extends StatelessWidget {
                 AllPlaylistsScreen.routeName: (ctx) =>
                     const AllPlaylistsScreen(),
                 AdminScreen.routeName: (ctx) => const AdminScreen(),
-                AddMusicScreen.routeName: (ctx) =>
-                    const AddMusicScreen(), // Thêm màn hình AddMusicScreen
+                AddMusicScreen.routeName: (ctx) => const AddMusicScreen(),
+                MusicManagementScreen.routeName: (ctx) =>
+                    const MusicManagementScreen(),
+                EditMusicScreen.routeName: (ctx) {
+                  final music = ModalRoute.of(ctx)!.settings.arguments as Music;
+                  return EditMusicScreen(music: music);
+                },
               });
         });
   }
