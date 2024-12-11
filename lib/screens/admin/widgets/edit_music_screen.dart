@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:mp3_clone/models/music.dart';
 import 'package:mp3_clone/providers/music_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EditMusicScreen extends StatefulWidget {
   static const routeName = '/edit-music';

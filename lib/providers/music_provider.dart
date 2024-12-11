@@ -105,4 +105,42 @@ class MusicProvider with ChangeNotifier {
       print('<<Exception-MusicProvider-deleteMusic>> ' + error.toString());
     }
   }
+
+  // Lấy tất cả bài hát từ Firestore
+  Future<List<Music>> getAllMusic() async {
+    await fetchAndSetData();  // Đảm bảo dữ liệu đã được tải
+    return list;  // Trả về danh sách bài hát đã tải
+  }
+
+  Future<void> addMusicForPlaylist(Music music) async {
+  final firestore = FirebaseFirestore.instance;
+  try {
+    // Thêm bài nhạc vào Firestore
+    final docRef = await firestore.collection('musics').add(music.toMap());
+
+    // Cập nhật lại ID bài nhạc sau khi lưu vào Firebase
+    final newMusic = music.copyWith(id: docRef.id);
+
+    // Thêm bài nhạc vào danh sách trong provider
+    _list.add(newMusic);
+    notifyListeners(); // Cập nhật giao diện
+
+    // Làm mới dữ liệu trong MusicSelectionScreen
+    await fetchAndSetData();
+  } catch (error) {
+    print('<<Exception-MusicProvider-addMusic>> ' + error.toString());
+  }
+}
+
+  Future<Music> getMusicById(String musicId) async {
+    final firestore = FirebaseFirestore.instance;
+    final musicDoc = await firestore.collection('music').doc(musicId).get();
+
+    if (musicDoc.exists) {
+      final musicData = musicDoc.data()!;
+      return Music.fromMap(musicData, musicId);
+    } else {
+      throw 'Music not found';
+    }
+  }
 }

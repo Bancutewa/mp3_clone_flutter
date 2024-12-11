@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mp3_clone/screens/admin/screens/music_management_screen.dart';
 import 'package:mp3_clone/screens/admin/screens/playlist_management_screen.dart';
-import 'package:mp3_clone/screens/admin/widgets/add_music_screen.dart';
 
 class AdminScreen extends StatelessWidget {
   static const routeName = '/admin';

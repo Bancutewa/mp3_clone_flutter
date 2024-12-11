@@ -4,16 +4,18 @@ import '../providers/music_provider.dart';
 import 'music.dart';
 
 class Playlist {
-  final String id;
+final String id;
   String title;
   String? imageUrl;
   final List<String> musicIDs;
+  List<Music>? musicList; // Danh sách bài hát chi tiết
 
   Playlist({
     required this.id,
     required this.title,
     this.imageUrl,
     List<String>? musicIDs,
+    this.musicList,
   }) : musicIDs = musicIDs ?? [];
 
   // Chuyển đổi từ Map (Firebase)
@@ -61,5 +63,12 @@ class Playlist {
   Music getMusicAtIndex(int index) {
     final musicId = musicIDs[index];
     return MusicProvider.instance.getByID(musicId);
+  }
+
+  // Phương thức cập nhật musicIDs
+  void updateMusicIDs(List<String> newMusicIDs) {
+    musicIDs
+      ..clear()
+      ..addAll(newMusicIDs);
   }
 }
