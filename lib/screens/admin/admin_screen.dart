@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mp3_clone/screens/admin/screens/music_management_screen.dart';
+import 'package:mp3_clone/screens/admin/screens/playlist_management_screen.dart';
 import 'package:mp3_clone/screens/admin/widgets/add_music_screen.dart';
-import '../common/welcome_screen.dart'; // Đừng quên import màn hình AddMusicScreen
 
 class AdminScreen extends StatelessWidget {
   static const routeName = '/admin';
@@ -58,7 +58,7 @@ class AdminScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(MusicManagementScreen.routeName);
+              Navigator.of(context).pushNamed(PlaylistManagementScreen.routeName);
             },
             icon: const Icon(Icons.music_note),
           ),
@@ -80,6 +80,8 @@ class AdminScreen extends StatelessWidget {
               _card('Quản lý danh sách playlist',
                   'assets/icons/playlist_2_96.png', () {
                 // Khi nhấn vào card "Quản lý danh sách playlist", mở màn hình quản lý playlist
+                Navigator.of(context)
+                    .pushNamed(PlaylistManagementScreen.routeName);
               }),
               _card('Gửi thông báo', 'assets/icons/email_send_96.png', () {
                 // Khi nhấn vào card "Gửi thông báo", mở màn hình gửi thông báo
