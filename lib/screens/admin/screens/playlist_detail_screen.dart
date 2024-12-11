@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mp3_clone/models/playlist.dart';
 import 'package:mp3_clone/providers/playlist_provider.dart';
+import 'package:mp3_clone/screens/admin/screens/music_selection_screen.dart';
 import 'package:provider/provider.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
@@ -17,7 +18,6 @@ class PlaylistDetailScreen extends StatefulWidget {
 class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
   bool _isLoading = false;
 
-  // Lấy danh sách bài hát từ database và cập nhật Playlist
   Future<void> _loadMusicList() async {
     setState(() {
       _isLoading = true;
@@ -49,7 +49,6 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Bài hát đã được thêm vào Playlist!')),
       );
-      _loadMusicList(); // Tải lại danh sách bài hát sau khi thêm
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Đã xảy ra lỗi khi thêm bài hát.')),
@@ -84,102 +83,82 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
     }
   }
 
+  Future<void> _navigateToMusicSelection() async {
+  final selectedMusicId = await Navigator.of(context).push<String>(
+    MaterialPageRoute(
+      builder: (ctx) => MusicSelectionScreen(),
+    ),
+  );
+
+  if (selectedMusicId != null) {
+    _addMusicToPlaylist(selectedMusicId);
+  }
+}
+
+
   @override
   void initState() {
     super.initState();
     _loadMusicList(); // Lấy danh sách bài hát khi màn hình được tạo
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.playlist.title),
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.cancel),
-          ),
-        ],
-      ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // Ảnh đại diện Playlist
-                    widget.playlist.imageUrl != null
-                        ? Image.network(widget.playlist.imageUrl!)
-                        : const SizedBox.shrink(),
+@override
+Widget build(BuildContext context) {
+  final playlistProvider = Provider.of<PlaylistProvider>(context);
+  final playlist = playlistProvider.getById(widget.playlist.id);
 
-                    const SizedBox(height: 20),
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(playlist.title),
+    ),
+    body: _isLoading
+        ? Center(child: CircularProgressIndicator())
+        : Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                // Hiển thị ảnh đại diện Playlist
+                if (playlist.imageUrl != null)
+                  Image.network(playlist.imageUrl!)
+                else
+                  Icon(Icons.playlist_play, size: 100),
 
-                    // Nút thêm bài hát
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        final String? newMusicId = await showDialog<String>(
-                          context: context,
-                          builder: (ctx) {
-                            return AlertDialog(
-                              title: Text('Chọn Bài Hát'),
-                              content: TextField(
-                                decoration: InputDecoration(hintText: 'Nhập ID bài hát'),
-                                onChanged: (value) {
-                                  // Lưu ID bài hát tạm thời nếu cần
-                                },
+                SizedBox(height: 20),
+
+                // Nút thêm bài hát
+                ElevatedButton.icon(
+                  onPressed: _navigateToMusicSelection,
+                  icon: Icon(Icons.add),
+                  label: Text('Thêm Bài Hát'),
+                ),
+                SizedBox(height: 20),
+
+                // Danh sách bài hát
+                playlist.musicList != null && playlist.musicList!.isNotEmpty
+                    ? Expanded(
+                        child: ListView.builder(
+                          itemCount: playlist.musicList!.length,
+                          itemBuilder: (ctx, index) {
+                            final music = playlist.musicList![index];
+                            return ListTile(
+                              leading: music.imageUrl.isNotEmpty
+                                  ? Image.network(music.imageUrl, width: 50, height: 50, fit: BoxFit.cover)
+                                  : Icon(Icons.music_note),
+                              title: Text(music.title),
+                              subtitle: Text(music.artists),
+                              trailing: IconButton(
+                                icon: Icon(Icons.remove_circle),
+                                onPressed: () => _removeMusicFromPlaylist(music.id),
                               ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(ctx).pop(null);
-                                  },
-                                  child: Text('Hủy'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    // Trả về ID bài hát đã nhập
-                                    Navigator.of(ctx).pop('music123'); // Thay bằng ID thực tế
-                                  },
-                                  child: Text('Thêm'),
-                                ),
-                              ],
                             );
                           },
-                        );
-
-                        if (newMusicId != null) {
-                          _addMusicToPlaylist(newMusicId);
-                        }
-                      },
-                      icon: Icon(Icons.add),
-                      label: Text('Thêm Bài Hát'),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Hiển thị danh sách bài hát
-                    widget.playlist.musicIDs.isNotEmpty
-                        ? ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: widget.playlist.musicIDs.length,
-                            itemBuilder: (ctx, index) {
-                              final musicId = widget.playlist.musicIDs[index];
-                              return ListTile(
-                                title: Text('Bài hát $musicId'),
-                                trailing: IconButton(
-                                  icon: Icon(Icons.remove_circle),
-                                  onPressed: () => _removeMusicFromPlaylist(musicId),
-                                ),
-                              );
-                            },
-                          )
-                        : const Text('Playlist này chưa có bài hát nào.'),
-                  ],
-                ),
-              ),
+                        ),
+                      )
+                    : const Text('Playlist này chưa có bài hát nào.'),
+              ],
             ),
-    );
-  }
+          ),
+  );
+}
+
 }

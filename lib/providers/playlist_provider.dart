@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mp3_clone/models/music.dart';
 import 'package:mp3_clone/models/playlist.dart';
 
 class PlaylistProvider with ChangeNotifier {
@@ -122,8 +123,10 @@ class PlaylistProvider with ChangeNotifier {
       throw error;
     }
   }
-  // Lấy danh sách bài hát của Playlist từ Firestore
-  Future<void> loadMusicForPlaylist(String playlistId) async {
+
+  // Tải thông tin bài hát cho Playlist
+  // PlaylistProvider
+Future<void> loadMusicForPlaylist(String playlistId) async {
   final firestore = FirebaseFirestore.instance;
 
   try {
@@ -131,29 +134,37 @@ class PlaylistProvider with ChangeNotifier {
     if (playlistDoc.exists) {
       final playlistData = playlistDoc.data()!;
       List<String> musicIds = List<String>.from(playlistData['musicIDs'] ?? []);
-      
-      // Cập nhật lại danh sách musicIDs cho Playlist tương ứng
+      List<Music> musicList = [];
+
+      for (var musicId in musicIds) {
+        final musicDoc = await firestore.collection('musics').doc(musicId).get();
+        if (musicDoc.exists) {
+          final musicData = musicDoc.data()!;
+          final music = Music.fromMap(musicData, musicId);
+          musicList.add(music);
+        }
+      }
+
       final playlistIndex = _playlists.indexWhere((p) => p.id == playlistId);
       if (playlistIndex != -1) {
-        // Tạo lại đối tượng Playlist mới với danh sách musicIDs đã cập nhật
         final updatedPlaylist = Playlist(
           id: _playlists[playlistIndex].id,
           title: _playlists[playlistIndex].title,
           imageUrl: _playlists[playlistIndex].imageUrl,
-          musicIDs: musicIds,  // Cập nhật musicIDs
+          musicIDs: musicIds,
         );
 
-        // Thay thế Playlist cũ bằng Playlist đã cập nhật
         _playlists[playlistIndex] = updatedPlaylist;
-
-        notifyListeners(); // Thông báo UI cập nhật
+        _playlists[playlistIndex].musicList = musicList; // Cập nhật danh sách bài hát
+        notifyListeners();
       }
     } else {
       throw 'Playlist không tồn tại';
     }
   } catch (error) {
     print('Lỗi khi tải danh sách bài hát của Playlist: $error');
-    throw error; // Ném lỗi nếu có lỗi
+    throw error;
   }
 }
+
 }

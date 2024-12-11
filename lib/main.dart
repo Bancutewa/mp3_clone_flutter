@@ -7,6 +7,7 @@ import 'package:mp3_clone/providers/playlist_provider.dart';
 import 'package:mp3_clone/providers/ranked_music_provider.dart';
 import 'package:mp3_clone/screens/admin/admin_screen.dart';
 import 'package:mp3_clone/screens/admin/screens/music_management_screen.dart';
+import 'package:mp3_clone/screens/admin/screens/music_selection_screen.dart';
 import 'package:mp3_clone/screens/admin/screens/playlist_management_screen.dart';
 import 'package:mp3_clone/screens/admin/widgets/add_music_screen.dart';
 import 'package:mp3_clone/screens/admin/widgets/add_playlist_screen.dart';
@@ -44,8 +45,9 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (_) =>
-                MusicProvider.instance), // Đảm bảo provider này có mặt
+          create: (_) =>
+              MusicProvider.instance
+        ), // Đảm bảo provider này có mặt
         ChangeNotifierProvider(
           create: (_) => PlaylistProvider.instance, // Thêm PlaylistProvider vào đây
         ),
@@ -113,6 +115,7 @@ class MyApp extends StatelessWidget {
                   final playlist = ModalRoute.of(ctx)!.settings.arguments as Playlist;
                   return EditPlaylistScreen(playlist: playlist);
                 },
+                MusicSelectionScreen.routeName: (ctx) => MusicSelectionScreen(),
               });
         });
   }
