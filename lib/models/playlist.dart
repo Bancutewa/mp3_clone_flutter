@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 import '../providers/music_provider.dart';
 import 'music.dart';
 
@@ -11,15 +13,16 @@ class Playlist {
     required this.id,
     required this.title,
     this.imageUrl,
-    required this.musicIDs,
-  });
+    List<String>? musicIDs,
+  }) : musicIDs = musicIDs ?? [];
 
-  factory Playlist.fromMap(Map<String, dynamic> map, String id) {
+  // Chuyển đổi từ Map (Firebase)
+  factory Playlist.fromMap(Map<String, dynamic> data, String id) {
     return Playlist(
       id: id,
-      title: map['title'],
-      imageUrl: map['imageUrl'],
-      musicIDs: (map['musicIDs'] as String).split('&&&&'),
+      title: data['title'],
+      imageUrl: data['imageUrl'],
+      musicIDs: List<String>.from(data['musicIDs'] ?? []), // Khởi tạo musicIDs mặc định
     );
   }
 
@@ -33,12 +36,19 @@ class Playlist {
     );
   }
 
-  Map toMap() => {
-        'id': id,
-        'title': title,
-        'imageUrl': imageUrl,
-        'musicIDs': musicIDs.join('&&&&'),
-      }..removeWhere((_, value) => value == null);
+  static String generateId() {
+    var uuid = const Uuid();
+    return uuid.v4();
+  }
+
+  // Chuyển đổi sang Map để lưu vào Firebase
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'imageUrl': imageUrl,
+      'musicIDs': musicIDs,
+    };
+  }
 
   Future<List<Music>> getMusicList() async {
     List<Music> result = [];

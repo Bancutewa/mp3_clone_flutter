@@ -51,7 +51,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
     switch (type) {
       case 'ExplorerPlaylist':
         final playlistId = arguments['id']!;
-        final playlist = PlaylistProvider.instance.getByID(playlistId);
+        final playlist = PlaylistProvider.instance.getById(playlistId);
         getMusicsFromPlaylist(playlist);
         title = playlist.title;
         numberOfMusic = playlist.musicIDs.length;

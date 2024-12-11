@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchData() async {
     await MusicProvider.instance.fetchAndSetData();
-    await PlaylistProvider.instance.fetchAndSetData();
+    await PlaylistProvider.instance.fetchAndSetPlaylists();
     await PlayingLogProvider.instance.fetchAndSetData();
     await RankedMusicProvider.instance.countAndSort();
     setState(() {

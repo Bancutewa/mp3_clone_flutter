@@ -11,7 +11,7 @@ class ExplorerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var fourPlaylists = PlaylistProvider.instance.list.sublist(0);
+    var fourPlaylists = PlaylistProvider.instance.playlists.sublist(0);
 
     return Padding(
       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),

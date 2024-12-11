@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mp3_clone/models/music.dart';
+import 'package:mp3_clone/models/playlist.dart';
 import 'package:mp3_clone/providers/music_provider.dart';
 import 'package:mp3_clone/providers/playing_log_provider.dart';
 import 'package:mp3_clone/providers/playlist_provider.dart';
 import 'package:mp3_clone/providers/ranked_music_provider.dart';
 import 'package:mp3_clone/screens/admin/admin_screen.dart';
 import 'package:mp3_clone/screens/admin/screens/music_management_screen.dart';
+import 'package:mp3_clone/screens/admin/screens/playlist_management_screen.dart';
 import 'package:mp3_clone/screens/admin/widgets/add_music_screen.dart';
+import 'package:mp3_clone/screens/admin/widgets/add_playlist_screen.dart';
 import 'package:mp3_clone/screens/admin/widgets/edit_music_screen.dart';
+import 'package:mp3_clone/screens/admin/widgets/edit_playlist_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'screens/explorer/all_playlists_screen.dart';
@@ -32,7 +36,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await MusicProvider.instance.fetchAndSetData();
-  await PlaylistProvider.instance.fetchAndSetData();
+  await PlaylistProvider.instance.fetchAndSetPlaylists();
   await PlayingLogProvider.instance.fetchAndSetData();
   await RankedMusicProvider.instance.countAndSort();
 
@@ -42,6 +46,9 @@ void main() async {
         ChangeNotifierProvider(
             create: (_) =>
                 MusicProvider.instance), // Đảm bảo provider này có mặt
+        ChangeNotifierProvider(
+          create: (_) => PlaylistProvider.instance, // Thêm PlaylistProvider vào đây
+        ),
         // Các provider khác nếu có
       ],
       child: const MyApp(),
@@ -99,6 +106,12 @@ class MyApp extends StatelessWidget {
                 EditMusicScreen.routeName: (ctx) {
                   final music = ModalRoute.of(ctx)!.settings.arguments as Music;
                   return EditMusicScreen(music: music);
+                },
+                PlaylistManagementScreen.routeName: (ctx) => const PlaylistManagementScreen(),
+                AddPlaylistScreen.routeName: (ctx) => AddPlaylistScreen(),
+                EditPlaylistScreen.routeName: (ctx) {
+                  final playlist = ModalRoute.of(ctx)!.settings.arguments as Playlist;
+                  return EditPlaylistScreen(playlist: playlist);
                 },
               });
         });

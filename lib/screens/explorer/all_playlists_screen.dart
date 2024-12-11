@@ -12,7 +12,7 @@ class AllPlaylistsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Danh sách tất cả playlist
-    final List<Playlist> playlists = PlaylistProvider.instance.list;
+    final List<Playlist> playlists = PlaylistProvider.instance.playlists;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
