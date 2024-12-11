@@ -116,21 +116,12 @@ class PlayerController {
   void _play(Music music) {
     _audioPlayer.play(music.audioUrl);
     state = PlayerState.PLAYING;
-
-    if (RadioProvider.instance.isPlaying) {
-      RadioProvider.instance.stop();
-    }
   }
 
   void togglePlay() {
     if (state == PlayerState.PLAYING) {
-      _audioPlayer.pause();
       state = PlayerState.PAUSED;
     } else if (state == PlayerState.PAUSED) {
-      if (RadioProvider.instance.isPlaying) {
-        RadioProvider.instance.stop();
-      }
-      _audioPlayer.resume();
       state = PlayerState.PLAYING;
     }
     notifyMusicChange();

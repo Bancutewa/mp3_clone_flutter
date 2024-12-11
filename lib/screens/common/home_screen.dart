@@ -7,7 +7,6 @@ import '../../providers/playlist_provider.dart';
 import '../../providers/ranked_music_provider.dart';
 import '../../utils/config.dart';
 import '../../controllers/player_controller.dart';
-import '../../pages/chart_page.dart';
 import '../../pages/explorer_page.dart';
 import '../../pages/personal_page.dart';
 import '../auth/login_screen.dart';
@@ -101,7 +100,6 @@ class _HomeScreenState extends State<HomeScreen> {
               children: const [
                 PersonalPage(),
                 ExplorerPage(),
-                ChartPage(),
                 AdminScreen(),
               ],
             )
@@ -130,8 +128,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           label: 'Cá nhân'),
                       BottomNavigationBarItem(
                           icon: Icon(Icons.album_outlined), label: 'Khám phá'),
-                      BottomNavigationBarItem(
-                          icon: Icon(Icons.insights_rounded), label: 'Chart'),
+                      // BottomNavigationBarItem(
+                      //     icon: Icon(Icons.insights_rounded), label: 'Chart'),
                       BottomNavigationBarItem(
                           icon: Icon(Icons.admin_panel_settings),
                           label: 'Admin'), // Thêm mục Admin
