@@ -46,6 +46,10 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
     try {
       await Provider.of<PlaylistProvider>(context, listen: false)
           .addMusicToPlaylist(widget.playlist.id, musicId);
+
+      // Sau khi thêm bài hát, tải lại danh sách bài hát
+      await _loadMusicList();
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Bài hát đã được thêm vào Playlist!')),
       );
@@ -69,6 +73,10 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
     try {
       await Provider.of<PlaylistProvider>(context, listen: false)
           .removeMusicFromPlaylist(widget.playlist.id, musicId);
+
+      // Sau khi xóa bài hát, tải lại danh sách bài hát
+      await _loadMusicList();
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Bài hát đã được xóa khỏi Playlist!')),
       );
@@ -84,17 +92,16 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
   }
 
   Future<void> _navigateToMusicSelection() async {
-  final selectedMusicId = await Navigator.of(context).push<String>(
-    MaterialPageRoute(
-      builder: (ctx) => MusicSelectionScreen(),
-    ),
-  );
+    final selectedMusicId = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (ctx) => MusicSelectionScreen(),
+      ),
+    );
 
-  if (selectedMusicId != null) {
-    _addMusicToPlaylist(selectedMusicId);
+    if (selectedMusicId != null) {
+      _addMusicToPlaylist(selectedMusicId);
+    }
   }
-}
-
 
   @override
   void initState() {
@@ -102,63 +109,66 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
     _loadMusicList(); // Lấy danh sách bài hát khi màn hình được tạo
   }
 
-@override
-Widget build(BuildContext context) {
-  final playlistProvider = Provider.of<PlaylistProvider>(context);
-  final playlist = playlistProvider.getById(widget.playlist.id);
+  @override
+  Widget build(BuildContext context) {
+    final playlistProvider = Provider.of<PlaylistProvider>(context);
+    final playlist = playlistProvider.getById(widget.playlist.id);
 
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(playlist.title),
-    ),
-    body: _isLoading
-        ? Center(child: CircularProgressIndicator())
-        : Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // Hiển thị ảnh đại diện Playlist
-                if (playlist.imageUrl != null)
-                  Image.network(playlist.imageUrl!)
-                else
-                  Icon(Icons.playlist_play, size: 100),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(playlist.title),
+      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // Hiển thị ảnh đại diện Playlist
+                  if (playlist.imageUrl != null)
+                    Image.network(playlist.imageUrl!)
+                  else
+                    Icon(Icons.playlist_play, size: 100),
 
-                SizedBox(height: 20),
+                  SizedBox(height: 20),
 
-                // Nút thêm bài hát
-                ElevatedButton.icon(
-                  onPressed: _navigateToMusicSelection,
-                  icon: Icon(Icons.add),
-                  label: Text('Thêm Bài Hát'),
-                ),
-                SizedBox(height: 20),
+                  // Nút thêm bài hát
+                  ElevatedButton.icon(
+                    onPressed: _navigateToMusicSelection,
+                    icon: Icon(Icons.add),
+                    label: Text('Thêm Bài Hát'),
+                  ),
+                  SizedBox(height: 20),
 
-                // Danh sách bài hát
-                playlist.musicList != null && playlist.musicList!.isNotEmpty
-                    ? Expanded(
-                        child: ListView.builder(
-                          itemCount: playlist.musicList!.length,
-                          itemBuilder: (ctx, index) {
-                            final music = playlist.musicList![index];
-                            return ListTile(
-                              leading: music.imageUrl.isNotEmpty
-                                  ? Image.network(music.imageUrl, width: 50, height: 50, fit: BoxFit.cover)
-                                  : Icon(Icons.music_note),
-                              title: Text(music.title),
-                              subtitle: Text(music.artists),
-                              trailing: IconButton(
-                                icon: Icon(Icons.remove_circle),
-                                onPressed: () => _removeMusicFromPlaylist(music.id),
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    : const Text('Playlist này chưa có bài hát nào.'),
-              ],
+                  // Danh sách bài hát
+                  playlist.musicList != null && playlist.musicList!.isNotEmpty
+                      ? Expanded(
+                          child: ListView.builder(
+                            itemCount: playlist.musicList!.length,
+                            itemBuilder: (ctx, index) {
+                              final music = playlist.musicList![index];
+                              return ListTile(
+                                leading: music.imageUrl.isNotEmpty
+                                    ? Image.network(music.imageUrl,
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover)
+                                    : Icon(Icons.music_note),
+                                title: Text(music.title),
+                                subtitle: Text(music.artists),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.remove_circle),
+                                  onPressed: () =>
+                                      _removeMusicFromPlaylist(music.id),
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : const Text('Playlist này chưa có bài hát nào.'),
+                ],
+              ),
             ),
-          ),
-  );
-}
-
+    );
+  }
 }

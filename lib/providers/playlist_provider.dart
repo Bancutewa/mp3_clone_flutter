@@ -46,7 +46,8 @@ class PlaylistProvider with ChangeNotifier {
         id: docRef.id,
         title: playlist.title,
         imageUrl: playlist.imageUrl,
-        musicIDs: playlist.musicIDs, // musicIDs đã được khởi tạo là một danh sách trống
+        musicIDs: playlist
+            .musicIDs, // musicIDs đã được khởi tạo là một danh sách trống
       );
 
       _playlists.add(newPlaylist);
@@ -71,8 +72,8 @@ class PlaylistProvider with ChangeNotifier {
         notifyListeners(); // Cập nhật giao diện
       }
     } catch (error) {
-      print('<<Exception-PlaylistProvider-updatePlaylist>> ' +
-          error.toString());
+      print(
+          '<<Exception-PlaylistProvider-updatePlaylist>> ' + error.toString());
     }
   }
 
@@ -85,7 +86,8 @@ class PlaylistProvider with ChangeNotifier {
       _playlists.removeWhere((playlist) => playlist.id == id);
       notifyListeners(); // Cập nhật giao diện
     } catch (error) {
-      print('<<Exception-PlaylistProvider-deletePlaylist>> ' + error.toString());
+      print(
+          '<<Exception-PlaylistProvider-deletePlaylist>> ' + error.toString());
     }
   }
 
@@ -108,63 +110,68 @@ class PlaylistProvider with ChangeNotifier {
   }
 
   // Xóa bài hát khỏi Playlist
-  Future<void> removeMusicFromPlaylist(String playlistId, String musicId) async {
+  Future<void> removeMusicFromPlaylist(
+      String playlistId, String musicId) async {
     final playlist = _playlists.firstWhere((p) => p.id == playlistId);
+
+    // Xóa bài hát khỏi danh sách musicIDs
     playlist.musicIDs.remove(musicId);
 
-    // Cập nhật Playlist trong Firestore
-    try {
-      await FirebaseFirestore.instance
-          .collection('playlists')
-          .doc(playlistId)
-          .update({'musicIDs': playlist.musicIDs});
-      notifyListeners(); // Cập nhật UI sau khi xóa bài hát
-    } catch (error) {
-      throw error;
-    }
+    // Cập nhật lại vào Firebase
+    await FirebaseFirestore.instance
+        .collection('playlists')
+        .doc(playlistId)
+        .update({'musicIDs': playlist.musicIDs});
+
+    // Cập nhật lại danh sách bài hát sau khi xóa
+    await loadMusicForPlaylist(playlistId);
+
+    notifyListeners(); // Cập nhật giao diện
   }
 
   // Tải thông tin bài hát cho Playlist
   // PlaylistProvider
-Future<void> loadMusicForPlaylist(String playlistId) async {
-  final firestore = FirebaseFirestore.instance;
+  Future<void> loadMusicForPlaylist(String playlistId) async {
+    final firestore = FirebaseFirestore.instance;
 
-  try {
-    final playlistDoc = await firestore.collection('playlists').doc(playlistId).get();
-    if (playlistDoc.exists) {
-      final playlistData = playlistDoc.data()!;
-      List<String> musicIds = List<String>.from(playlistData['musicIDs'] ?? []);
-      List<Music> musicList = [];
+    try {
+      final playlistDoc =
+          await firestore.collection('playlists').doc(playlistId).get();
+      if (playlistDoc.exists) {
+        final playlistData = playlistDoc.data()!;
+        List<String> musicIds =
+            List<String>.from(playlistData['musicIDs'] ?? []);
+        List<Music> musicList = [];
 
-      for (var musicId in musicIds) {
-        final musicDoc = await firestore.collection('musics').doc(musicId).get();
-        if (musicDoc.exists) {
-          final musicData = musicDoc.data()!;
-          final music = Music.fromMap(musicData, musicId);
-          musicList.add(music);
+        for (var musicId in musicIds) {
+          final musicDoc =
+              await firestore.collection('musics').doc(musicId).get();
+          if (musicDoc.exists) {
+            final musicData = musicDoc.data()!;
+            final music = Music.fromMap(musicData, musicId);
+            musicList.add(music);
+          }
         }
-      }
 
-      final playlistIndex = _playlists.indexWhere((p) => p.id == playlistId);
-      if (playlistIndex != -1) {
-        final updatedPlaylist = Playlist(
-          id: _playlists[playlistIndex].id,
-          title: _playlists[playlistIndex].title,
-          imageUrl: _playlists[playlistIndex].imageUrl,
-          musicIDs: musicIds,
-        );
+        final playlistIndex = _playlists.indexWhere((p) => p.id == playlistId);
+        if (playlistIndex != -1) {
+          final updatedPlaylist = Playlist(
+            id: _playlists[playlistIndex].id,
+            title: _playlists[playlistIndex].title,
+            imageUrl: _playlists[playlistIndex].imageUrl,
+            musicIDs: musicIds,
+            musicList: musicList, // Cập nhật lại danh sách bài hát
+          );
 
-        _playlists[playlistIndex] = updatedPlaylist;
-        _playlists[playlistIndex].musicList = musicList; // Cập nhật danh sách bài hát
-        notifyListeners();
+          _playlists[playlistIndex] = updatedPlaylist;
+          notifyListeners(); // Cập nhật UI
+        }
+      } else {
+        throw 'Playlist không tồn tại';
       }
-    } else {
-      throw 'Playlist không tồn tại';
+    } catch (error) {
+      print('Lỗi khi tải danh sách bài hát của Playlist: $error');
+      throw error;
     }
-  } catch (error) {
-    print('Lỗi khi tải danh sách bài hát của Playlist: $error');
-    throw error;
   }
-}
-
 }
